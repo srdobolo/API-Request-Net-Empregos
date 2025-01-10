@@ -55,7 +55,10 @@ def post_job():
             "tipo": tipo
         }
 
-        return jsonify({"message": "Job offer posted successfully", "ref": ref}), 201
+        # Build the response URL
+        url = f"http://partner.net-empregos.com/hrsmart_insert.asp?ACCESS={access_key}&REF={ref}&TITULO={titulo}&TEXTO={texto}&ZONA={zona}&CATEGORIA={categoria}&TIPO={tipo}"
+
+        return jsonify({"message": "Job offer posted successfully", "url": url}), 201
     except Exception as e:
         return jsonify({"error": f"An error occurred: {str(e)}", "trace": traceback.format_exc()}), 500
 
