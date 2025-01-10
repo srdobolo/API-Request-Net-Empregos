@@ -49,7 +49,6 @@ def insert_job_offer():
 if __name__ == '__main__':
     app.run(debug=True)
 
-
 # # Route to post a new job offer
 # @app.route('/hrsmart_insert', methods=['POST'])
 # def post_job():
