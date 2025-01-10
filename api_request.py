@@ -3,7 +3,7 @@ from flask import Flask, request, jsonify
 app = Flask(__name__)
 
 # API Access Key for authentication
-API_ACCESS_KEY = "YOUR_API_ACCESS_KEY"
+API_ACCESS_KEY = "API_ACCESS_KEY"
 
 # Simulated database for job offers
 job_offers = {}
