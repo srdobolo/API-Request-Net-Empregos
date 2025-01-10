@@ -24,7 +24,7 @@ def generate_ref():
     return ''.join(random.choices(string.ascii_letters + string.digits, k=20))
 
 # Route to post a new job offer
-@app.route('/hrsmart_insert', methods=['POST'])
+@app.route('/hrsmart_insert.asp', methods=['POST'])
 def post_job():
     try:
         access_key = request.args.get('ACCESS')
@@ -62,17 +62,17 @@ def post_job():
     except Exception as e:
         return jsonify({"error": f"An error occurred: {str(e)}", "trace": traceback.format_exc()}), 500
 
-# Route to generate a new REF
-@app.route('/generate_ref', methods=['GET'])
-def generate_ref_route():
-    try:
-        ref = generate_ref()
-        return jsonify({"ref": ref}), 200
-    except Exception as e:
-        return jsonify({"error": f"An error occurred: {str(e)}", "trace": traceback.format_exc()}), 500
+# # Route to generate a new REF
+# @app.route('/generate_ref', methods=['GET'])
+# def generate_ref_route():
+#     try:
+#         ref = generate_ref()
+#         return jsonify({"ref": ref}), 200
+#     except Exception as e:
+#         return jsonify({"error": f"An error occurred: {str(e)}", "trace": traceback.format_exc()}), 500
 
-if __name__ == '__main__':
-    app.run(debug=True)
+# if __name__ == '__main__':
+#     app.run(debug=True)
 
 # from flask import Flask
 
