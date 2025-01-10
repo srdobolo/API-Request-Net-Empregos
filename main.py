@@ -1,7 +1,6 @@
+from flask import Flask, request, jsonify
 import random
 import string
-from flask import Flask, request, jsonify
-import traceback
 
 app = Flask(__name__)
 
@@ -23,64 +22,72 @@ def validate_ref(ref):
 def generate_ref():
     return ''.join(random.choices(string.ascii_letters + string.digits, k=20))
 
-# Route to post a new job offer
-@app.route('/hrsmart_insert.asp', methods=['POST'])
-def post_job():
-    try:
-        access_key = request.args.get('ACCESS')
-        if not validate_access_key(access_key):
-            return jsonify({"error": "Invalid API key"}), 403
+@app.route('/hrsmart_insert/', methods=['POST'])
+def insert_job_offer():
+    # Get JSON data from POST request
+    data = request.get_json()
 
-        ref = request.args.get('REF')
-        if not validate_ref(ref):
-            return jsonify({"error": "Invalid REF. Must be alphanumeric and 20 characters long."}), 400
+    # Validate the API access key
+    access_key = data.get("access_key")
+    if not validate_access_key(access_key):
+        return jsonify({"error": "Invalid API key"}), 403
 
-        titulo = request.args.get('TITULO')
-        texto = request.args.get('TEXTO')
-        zona = request.args.get('ZONA')
-        categoria = request.args.get('CATEGORIA')
-        tipo = request.args.get('TIPO')
+    # Validate REF if it is included in the request
+    ref = data.get("ref")
+    if ref and not validate_ref(ref):
+        return jsonify({"error": "Invalid REF format"}), 400
 
-        if not titulo or not texto or not zona or not categoria or not tipo:
-            return jsonify({"error": "Missing required parameters"}), 400
+    # Generate REF if not provided
+    if not ref:
+        ref = generate_ref()
 
-        if ref in job_offers:
-            return jsonify({"error": "Job offer with this reference already exists"}), 409
+    # Store the job offer in the simulated database (you can replace this with your actual database)
+    job_offers[ref] = data
 
-        job_offers[ref] = {
-            "titulo": titulo,
-            "texto": texto,
-            "zona": zona,
-            "categoria": categoria,
-            "tipo": tipo
-        }
+    return jsonify({"message": "Job offer inserted", "ref": ref}), 201
 
-        # Build the response URL
-        url = f"http://partner.net-empregos.com/hrsmart_insert.asp?ACCESS={access_key}&REF={ref}&TITULO={titulo}&TEXTO={texto}&ZONA={zona}&CATEGORIA={categoria}&TIPO={tipo}"
+if __name__ == '__main__':
+    app.run(debug=True)
 
-        return jsonify({"message": "Job offer posted successfully", "url": url}), 201
-    except Exception as e:
-        return jsonify({"error": f"An error occurred: {str(e)}", "trace": traceback.format_exc()}), 500
+
+# # Route to post a new job offer
+# @app.route('/hrsmart_insert', methods=['POST'])
+# def post_job():
+#     access_key = request.args.get('ACCESS')
+#     if not validate_access_key(access_key):
+#         return jsonify({"error": "Invalid API key"}), 403
+
+#     ref = request.args.get('REF')
+#     if not validate_ref(ref):
+#         return jsonify({"error": "Invalid REF. Must be alphanumeric and 20 characters long."}), 400
+
+#     titulo = request.args.get('TITULO')
+#     texto = request.args.get('TEXTO')
+#     zona = request.args.get('ZONA')
+#     categoria = request.args.get('CATEGORIA')
+#     tipo = request.args.get('TIPO')
+
+#     if not titulo or not texto or not zona or not categoria or not tipo:
+#         return jsonify({"error": "Missing required parameters"}), 400
+
+#     if ref in job_offers:
+#         return jsonify({"error": "Job offer with this reference already exists"}), 409
+
+#     job_offers[ref] = {
+#         "titulo": titulo,
+#         "texto": texto,
+#         "zona": zona,
+#         "categoria": categoria,
+#         "tipo": tipo
+#     }
+
+#     return jsonify({"message": "Job offer posted successfully", "ref": ref}), 201
 
 # # Route to generate a new REF
 # @app.route('/generate_ref', methods=['GET'])
 # def generate_ref_route():
-#     try:
-#         ref = generate_ref()
-#         return jsonify({"ref": ref}), 200
-#     except Exception as e:
-#         return jsonify({"error": f"An error occurred: {str(e)}", "trace": traceback.format_exc()}), 500
-
-# if __name__ == '__main__':
-#     app.run(debug=True)
-
-# from flask import Flask
-
-# app = Flask(__name__)
-
-# @app.route('/')
-# def hello_world():
-#     return 'Hello, World!'
+#     ref = generate_ref()
+#     return jsonify({"ref": ref}), 200
 
 # if __name__ == '__main__':
 #     app.run(debug=True)
