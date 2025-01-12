@@ -76,3 +76,10 @@ categoria_mapping = {
     "Call Center / Help Desk": "57",
     "Limpezas / Domésticas": "58",
 }
+
+tipo_mapping = {
+    "Tempo Inteiro": "1",
+    "Part-Time": "2",
+    "Estágio": "3",
+    "Teletrabalho": "4",
+}
