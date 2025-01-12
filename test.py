@@ -46,8 +46,8 @@ if script_tag and script_tag.string:
             "REF": data.get('identifier', {}).get('value', 'job001'),
             "TITULO": data.get('title', 'undisclosed'),
             "TEXTO": data.get('description', 'No description provided.'),
-            "ZONA": data.get('jobLocation', {}).get('address', {}).get('addressLocality', 'undisclosed'),  
-            "CATEGORIA": data.get('industry', {}).get('value', 'job001'),  
+            "ZONA": "Lisboa",  
+            "CATEGORIA": "Call Center / Help Desk",  
             "TIPO": data.get('employmentType', 'undisclosed'),  
         }
 
