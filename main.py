@@ -9,7 +9,11 @@ base_url = 'https://smart-recruitments.com/find-jobs-all/'
 
 # API endpoint and key
 api_url = "http://partner.net-empregos.com/hrsmart_insert.asp"
-api_key = "API_ACCESS_KEY"  # Replace with your actual API key
+
+# Read the API key from a file
+key_file_path = "API_ACCESS_KEY"
+with open(key_file_path, "r") as file:
+    api_key = file.read().strip()  # Strip to remove any surrounding whitespace or newlines
 
 # Step 1: Load the main jobs page to find all job links
 response = requests.get(base_url)
