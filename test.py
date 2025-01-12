@@ -46,9 +46,9 @@ if script_tag and script_tag.string:
             "REF": data.get('identifier', {}).get('value', 'job001'),
             "TITULO": data.get('title', 'undisclosed'),
             "TEXTO": data.get('description', 'No description provided.'),
-            "ZONA": "1",  # Adjust as needed
-            "CATEGORIA": "10",  # Adjust as needed
-            "TIPO": "1",  # Adjust as needed
+            "ZONA": data.get('jobLocation', {}).get('address', {}).get('addressLocality', 'undisclosed'),  
+            "CATEGORIA": data.get('industry', {}).get('value', 'job001'),  
+            "TIPO": data.get('employmentType', 'undisclosed'),  
         }
 
         # Log the payload
