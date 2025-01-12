@@ -47,7 +47,7 @@ if script_tag and script_tag.string:
             "TITULO": data.get('title', 'undisclosed'),
             "TEXTO": data.get('description', 'No description provided.'),
             "ZONA": data.get('jobLocation', {}).get('address', {}).get('addressLocality', 'undisclosed'),  
-            "CATEGORIA": data.get('industry', {}).get('value', 'job001'),  
+            "CATEGORIA": data.get('industry', {}).get('value', 'undisclosed'),  
             "TIPO": data.get('employmentType', 'undisclosed'),  
         }
 
