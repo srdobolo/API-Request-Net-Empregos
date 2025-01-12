@@ -1,92 +1,83 @@
-from flask import Flask, request, jsonify
-import random
-import string
+import requests
+from bs4 import BeautifulSoup
+import json
+import html
+from urllib.parse import urlencode
 
-app = Flask(__name__)
+# Base URL for the find-jobs section
+base_url = 'https://smart-recruitments.com/find-jobs-all/'
 
-# API Access Key for authentication
-API_ACCESS_KEY = "API_ACCESS_KEY"
+# API endpoint and key
+api_url = "http://partner.net-empregos.com/hrsmart_insert.asp"
+api_key = "API_ACCESS_KEY"  # Replace with your actual API key
 
-# Simulated database for job offers
-job_offers = {}
+# Step 1: Load the main jobs page to find all job links
+response = requests.get(base_url)
+html_content = response.content
 
-# Utility function to validate API key
-def validate_access_key(access_key):
-    return access_key == API_ACCESS_KEY
+# Step 2: Parse the HTML with BeautifulSoup to find all job links
+soup = BeautifulSoup(html_content, 'html.parser')
 
-# Utility function to validate REF
-def validate_ref(ref):
-    return ref and len(ref) == 20 and ref.isalnum()
+# Extract job links, deduplicate, and filter those ending with "pt"
+job_links = list(set([
+    a['href'] for a in soup.find_all('a', href=True)
+    if '/find-jobs-all/' in a['href'] and a['href'].endswith('pt')
+]))
 
-# Utility function to generate a valid REF
-def generate_ref():
-    return ''.join(random.choices(string.ascii_letters + string.digits, k=20))
+# Log the number of job links found
+print(f"Found {len(job_links)} job(s) to process ending with 'pt'.")
 
-@app.route('/hrsmart_insert/', methods=['POST'])
-def insert_job_offer():
-    # Get JSON data from POST request
-    data = request.get_json()
+# Step 3: Iterate over each job link, fetch its content, and extract the JSON
+for job_link in job_links:
+    # Full URL for each job link
+    job_url = base_url + job_link.split('/')[-1]
 
-    # Validate the API access key
-    access_key = data.get("access_key")
-    if not validate_access_key(access_key):
-        return jsonify({"error": "Invalid API key"}), 403
+    # Fetch the job details page
+    response = requests.get(job_url)
+    job_html_content = response.content
 
-    # Validate REF if it is included in the request
-    ref = data.get("ref")
-    if ref and not validate_ref(ref):
-        return jsonify({"error": "Invalid REF format"}), 400
+    # Parse the HTML with BeautifulSoup
+    job_soup = BeautifulSoup(job_html_content, 'html.parser')
 
-    # Generate REF if not provided
-    if not ref:
-        ref = generate_ref()
+    # Locate the <script> tag containing the JSON
+    script_tag = job_soup.find('script', type='application/ld+json')
 
-    # Store the job offer in the simulated database (you can replace this with your actual database)
-    job_offers[ref] = data
+    if script_tag and script_tag.string:
+        json_content = script_tag.string
 
-    return jsonify({"message": "Job offer inserted", "ref": ref}), 201
+        try:
+            # Unescape any HTML entities that may be in the JSON content
+            json_content_unescaped = html.unescape(json_content)
 
-if __name__ == '__main__':
-    app.run(debug=True)
+            # Parse the JSON content
+            data = json.loads(json_content_unescaped)
 
-# # Route to post a new job offer
-# @app.route('/hrsmart_insert', methods=['POST'])
-# def post_job():
-#     access_key = request.args.get('ACCESS')
-#     if not validate_access_key(access_key):
-#         return jsonify({"error": "Invalid API key"}), 403
+            # Prepare the payload for the API request
+            payload = {
+                "ACCESS": api_key,
+                "REF": data.get('identifier', {}).get('value', 'job001'),  # Default to 'job001' if missing
+                "TITULO": data.get('title', 'undisclosed'),
+                "TEXTO": data.get('description', 'No description provided.'),
+                "ZONA": "1",  # Adjust as needed
+                "CATEGORIA": "10",  # Adjust as needed
+                "TIPO": "1",  # Adjust as needed
+            }
 
-#     ref = request.args.get('REF')
-#     if not validate_ref(ref):
-#         return jsonify({"error": "Invalid REF. Must be alphanumeric and 20 characters long."}), 400
+            # Log the payload
+            print(f"Sending payload: {payload}")
 
-#     titulo = request.args.get('TITULO')
-#     texto = request.args.get('TEXTO')
-#     zona = request.args.get('ZONA')
-#     categoria = request.args.get('CATEGORIA')
-#     tipo = request.args.get('TIPO')
+            # Send the POST request
+            response = requests.post(api_url, data=payload)
 
-#     if not titulo or not texto or not zona or not categoria or not tipo:
-#         return jsonify({"error": "Missing required parameters"}), 400
+            # Check the response
+            if response.status_code == 200:
+                print(f"Job '{payload['TITULO']}' successfully sent.")
+            else:
+                print(f"Failed to send job '{payload['TITULO']}'. HTTP Status: {response.status_code}, Response: {response.text}")
 
-#     if ref in job_offers:
-#         return jsonify({"error": "Job offer with this reference already exists"}), 409
+        except json.JSONDecodeError:
+            print(f"Error decoding JSON from {job_url}")
+        except Exception as e:
+            print(f"Error processing job '{job_url}': {e}")
 
-#     job_offers[ref] = {
-#         "titulo": titulo,
-#         "texto": texto,
-#         "zona": zona,
-#         "categoria": categoria,
-#         "tipo": tipo
-#     }
-
-#     return jsonify({"message": "Job offer posted successfully", "ref": ref}), 201
-
-# # Route to generate a new REF
-# @app.route('/generate_ref', methods=['GET'])
-# def generate_ref_route():
-#     ref = generate_ref()
-#     return jsonify({"ref": ref}), 200
-
-# if __name__ == '__main__':
-#     app.run(debug=True)
+print("All jobs processed.")
