@@ -10,17 +10,14 @@ def clean_job_data(data, mappings):
     category = data.get('industry', {}).get('value', 'Unknown')  
     type = data.get('employmentType', 'Unknown')  
 
-    if (
-        data.get('jobLocationType') == 'TELECOMMUTE' and
-        data.get('jobLocation', {}).get('address', {}).get('addressLocality') == 'Portugal'
-    ):
+    if data.get('jobLocationType') == 'TELECOMMUTE':
         type = 'Remote'
 
     # Handle special cases on Location
     if location == "Lisbon":
         location = "Lisboa" 
     if location == "Portugal":
-        location = "Lisboa"
+        location = "( Todas as Zonas )"
     if location not in mappings["zona_mapping"]:
         location = "Foreign - Others"
 
