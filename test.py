@@ -16,6 +16,22 @@ except FileNotFoundError:
     print(f"Error: The file '{key_file_path}' was not found. Please ensure it exists.")
     exit(1)
 
+    # Load the mapping.json file
+    mapping_file_path = "mapping.json"
+
+    try:
+        with open(mapping_file_path, "r") as file:
+            mappings = json.load(file)
+    except FileNotFoundError:
+        print(f"Error: The file '{mapping_file_path}' was not found. Please ensure it exists.")
+        exit(1)
+    except json.JSONDecodeError as e:
+        print(f"Error: Failed to parse '{mapping_file_path}': {e}")
+        exit(1)
+
+# Debugging: Log loaded mappings
+print("Loaded mappings:", json.dumps(mappings, indent=2))
+
 # Specific URL for testing
 test_url = "https://www.smart-recruitments.com/find-jobs-all/customer-support-with-dutch-in-lisbon-pt"
 
@@ -56,6 +72,16 @@ if script_tag and script_tag.string:
         # Debugging: Log the formatted description
         print("Formatted Description:", formatted_description)
 
+        # Extract location value
+        location = data.get('jobLocation', {}).get('address', {}).get('addressLocality', 'Unknown')
+
+        # Handle special case for "Lisbon"
+        if location == "Lisbon":
+            location = "Lisboa"  # Convert "Lisbon" to "Lisboa"
+
+        # Map the location to its corresponding ZONA value
+        zona = mappings["zona_mapping"].get(location, "Unknown")  # Default to "Unknown" if not found
+
         # Prepare the payload for the API request
         payload = {
             "ACCESS": api_key,
@@ -66,7 +92,7 @@ if script_tag and script_tag.string:
                 f'<a href="{test_url}" target="_blank">Clique aqui para se candidatar!</a> '
                 "ou por email para info@smart-recruitments.com"
             ),
-            "ZONA": "1",  # Need to communicate with mapping.json
+            "ZONA": zona,  # Need to communicate with mapping.json
             "CATEGORIA": "57",  # Need to communicate with mapping.json
             "TIPO": "1",  # Need to communicate with mapping.json
         }
