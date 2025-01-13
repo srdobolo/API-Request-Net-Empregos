@@ -10,7 +10,10 @@ def clean_job_data(data, mappings):
     category = data.get('industry', {}).get('value', 'Unknown')  
     type = data.get('employmentType', 'Unknown')  
 
-    if data.get('jobLocationType', {}) == 'TELECOMMUTE':
+    if (
+        data.get('jobLocationType') == 'TELECOMMUTE' and
+        data.get('jobLocation', {}).get('address', {}).get('addressLocality') == 'Portugal'
+    ):
         type = 'Remote'
 
     # Handle special cases on Location
