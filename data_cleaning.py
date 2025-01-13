@@ -10,6 +10,9 @@ def clean_job_data(data, mappings):
     category = data.get('industry', {}).get('value', 'Unknown')  
     type = data.get('employmentType', 'Unknown')  
 
+    if data.get('jobLocationType', {}) == 'TELECOMMUTE':
+        type = 'Remote'
+
     # Handle special cases on Location
     if location == "Lisbon":
         location = "Lisboa"  # Convert "Lisbon" to "Lisboa"
@@ -75,7 +78,7 @@ def clean_job_data(data, mappings):
         type = "Part-Time"  
     if type == "INTERN":
         type = "Estágio" 
-    if type == " ": # YET TO BE DEFINED
+    if type == "Remote": 
         type = "Teletrabalho"  
     
     # Map the category to its corresponding value in the mapping

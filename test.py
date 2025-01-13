@@ -34,7 +34,7 @@ except json.JSONDecodeError as e:
 print("Loaded mappings:", json.dumps(mappings, indent=2))
 
 # Specific URL for testing
-test_url = "https://www.smart-recruitments.com/find-jobs-all/customer-support-with-dutch-in-lisbon-pt"
+test_url = "https://www.smart-recruitments.com/find-jobs-all/content-moderation-with-hebrew-remote-in-lisbon-pt"
 
 # Fetch the job details page
 try:
