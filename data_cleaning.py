@@ -18,8 +18,9 @@ def clean_job_data(data, mappings):
 
     # Handle special cases on Location
     if location == "Lisbon":
-        location = "Lisboa"  # Convert "Lisbon" to "Lisboa"
-    # Check if location exists in the mappings
+        location = "Lisboa" 
+    if location == "Portugal":
+        location = "Lisboa"
     if location not in mappings["zona_mapping"]:
         location = "Foreign - Others"
 
