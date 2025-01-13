@@ -15,8 +15,59 @@ def clean_job_data(data, mappings):
         location = "Lisboa"  # Convert "Lisbon" to "Lisboa"
 
     # Handle special cases on Category
-    if category == "Customer Service":
-        category = "Call Center / Help Desk"  # Convert "Customer Service" to "Call Center / Help Desk"
+    category_mappings = {
+        "Customer Service": "Call Center / Help Desk",
+        "Telecomunicações": "Telecommunications",
+        "Informática ( Programação )": "Programming",
+        "Indústria / Produção": "Industry / Production",
+        "Comunicação Social / Media": "Media / Communications",
+        "Hotelaria / Turismo": "Hospitality / Tourism",
+        "Educação / Formação": "Education / Training",
+        "Imobiliário": "Real Estate",
+        "Saúde / Medicina / Enfermagem": "Healthcare / Medicine / Nursing",
+        "Contabilidade / Finanças": "Accounting / Finance",
+        "Banca / Seguros / Serviços Financeiros": "Banking / Insurance / Financial Services",
+        "Relações Públicas": "Public Relations",
+        "Publicidade / Marketing": "Advertising / Marketing",
+        "Arquitectura / Design": "Architecture / Design",
+        "Construção Civil": "Civil Construction",
+        "Engenharia ( Mecanica )": "Engineering (Mechanical)",
+        "Gestão de Empresas / Economia": "Business Management / Economics",
+        "Desporto / Ginásios": "Sports / Gyms",
+        "Secretariado / Administração": "Secretariat / Administration",
+        "Lojas / Comércio / Balcão": "Shops / Commerce / Counter",
+        "Gestão RH": "HR Management",
+        "Informática ( Formação )": "IT Training",
+        "Informática ( Internet )": "IT (Internet)",
+        "Informática ( Multimedia )": "IT (Multimedia)",
+        "Informática ( Gestão de Redes )": "IT (Network Management)",
+        "Informática ( Analise de Sistemas )": "IT (Systems Analysis)",
+        "Agricultura / Florestas / Pescas": "Agriculture / Forests / Fisheries",
+        "Artes / Entretenimento / Media": "Arts / Entertainment / Media",
+        "Farmácia / Biotecnologia": "Pharmacy / Biotechnology",
+        "Restauração / Bares / Pastelarias": "Restaurants / Bars / Pastry Shops",
+        "Transportes / Logística": "Transport / Logistics",
+        "Direito / Justiça": "Law / Justice",
+        "Engenharia ( Civil )": "Engineering (Civil)",
+        "Engenharia ( Eletrotecnica )": "Engineering (Electrotechnical)",
+        "Beleza / Moda / Bem Estar": "Beauty / Fashion / Wellbeing",
+        "Informática ( Técnico de Hardware )": "IT (Hardware Technician)",
+        "Engenharia ( Química / Biologia )": "Engineering (Chemical / Biological)",
+        "Conservação / Manutenção / Técnica": "Conservation / Maintenance / Technical",
+        "Serviços Técnicos": "Technical Services",
+        "Comercial / Vendas": "Commercial / Sales",
+        "Engenharia ( Ambiente )": "Engineering (Environmental)",
+        "Serviços Sociais": "Social Services",
+        "Informática (Comercial/Gestor de Conta)": "IT (Sales/Account Manager)",
+        "Call Center / Help Desk": "Call Center / Help Desk",
+        "Limpezas / Domésticas": "Cleaning / Domestic"
+    }
+
+    # Now you can use this mapping dynamically:
+    if category in category_mappings:
+        category = category_mappings[category]
+    else:
+        category = category  # Leave the category as it is if not found in the mapping
 
     # Handle special cases on Type
     if type == "FULL_TIME":
