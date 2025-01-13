@@ -72,15 +72,25 @@ if script_tag and script_tag.string:
         # Debugging: Log the formatted description
         print("Formatted Description:", formatted_description)
 
-        # Extract location value
+        # Extract values
         location = data.get('jobLocation', {}).get('address', {}).get('addressLocality', 'Unknown')
+        category = data.get('industry', {}).get('value', 'Unknown')  # Adjust according to where the category comes from
+        type = data.get('employmentType', 'Unknown')  # Placeholder: Update with logic for employmentType
 
-        # Handle special case for "Lisbon"
+        # Handle special cases
         if location == "Lisbon":
             location = "Lisboa"  # Convert "Lisbon" to "Lisboa"
 
-        # Map the location to its corresponding ZONA value
+        if category == "Customer Service":
+            category = "Call Center / Help Desk"  # Convert "Customer Service" to "Call Center / Help Desk"
+
+        if type == "FULL_TIME":
+            type = "Tempo Inteiro"  # Convert "FULL_TIME" to "Tempo Inteiro"
+
+        # Map the category to its corresponding value in the mapping
         zona = mappings["zona_mapping"].get(location, "0")  # Default to "Unknown" if not found
+        categoria = mappings["categoria_mapping"].get(category, "0")  # Default to "0" if not found
+        tipo = mappings["tipo_mapping"].get(type, "0")  # Default to "0" if not found
 
         # Prepare the payload for the API request
         payload = {
@@ -93,8 +103,8 @@ if script_tag and script_tag.string:
                 "ou por email para info@smart-recruitments.com"
             ),
             "ZONA": zona,
-            "CATEGORIA": "57",  # Placeholder: Update with logic for categoria_mapping
-            "TIPO": "1",  # Placeholder: Update with logic for tipo_mapping
+            "CATEGORIA": categoria,  # Placeholder: Update with logic for categoria_mapping
+            "TIPO": tipo,  # Placeholder: Update with logic for tipo_mapping
         }
 
         # Debugging: Log the payload
