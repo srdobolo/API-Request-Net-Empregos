@@ -69,9 +69,6 @@ if script_tag and script_tag.string:
         raw_description = data.get('description', 'No description provided.')
         formatted_description = raw_description.replace("<br>", "\n")
 
-        # Debugging: Log the formatted description
-        print("Formatted Description:", formatted_description)
-
         # Extract values
         location = data.get('jobLocation', {}).get('address', {}).get('addressLocality', 'Unknown')
         category = data.get('industry', {}).get('value', 'Unknown')  # Adjust according to where the category comes from
