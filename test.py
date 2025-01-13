@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import html
+from data_cleaning import clean_job_data 
 
 # API endpoint and key
 api_url = "http://partner.net-empregos.com/hrsmart_insert.asp"
@@ -65,29 +66,8 @@ if script_tag and script_tag.string:
         # Debugging: Log the loaded JSON
         print("Parsed JSON data:", json.dumps(data, indent=2))
 
-        # Clean up the description text
-        raw_description = data.get('description', 'No description provided.')
-        formatted_description = raw_description.replace("<br>", "\n")
-
-        # Extract values
-        location = data.get('jobLocation', {}).get('address', {}).get('addressLocality', 'Unknown')
-        category = data.get('industry', {}).get('value', 'Unknown')  # Adjust according to where the category comes from
-        type = data.get('employmentType', 'Unknown')  # Placeholder: Update with logic for employmentType
-
-        # Handle special cases
-        if location == "Lisbon":
-            location = "Lisboa"  # Convert "Lisbon" to "Lisboa"
-
-        if category == "Customer Service":
-            category = "Call Center / Help Desk"  # Convert "Customer Service" to "Call Center / Help Desk"
-
-        if type == "FULL_TIME":
-            type = "Tempo Inteiro"  # Convert "FULL_TIME" to "Tempo Inteiro"
-
-        # Map the category to its corresponding value in the mapping
-        zona = mappings["zona_mapping"].get(location, "0")  # Default to "Unknown" if not found
-        categoria = mappings["categoria_mapping"].get(category, "0")  # Default to "0" if not found
-        tipo = mappings["tipo_mapping"].get(type, "0")  # Default to "0" if not found
+        # Clean the job data
+        formatted_description, zona, categoria, tipo = clean_job_data(data, mappings)
 
         # Prepare the payload for the API request
         payload = {
@@ -107,8 +87,11 @@ if script_tag and script_tag.string:
         # Debugging: Log the payload
         print("Payload to be sent:", payload)
 
+        # Ensure that text fields are encoded in ISO-8859-1
+        encoded_payload = {key: value.encode('iso-8859-1') if isinstance(value, str) else value for key, value in payload.items()}
+
         # Send the POST request
-        response = requests.post(api_url, data=payload.encode("iso-8859-1"))
+        response = requests.post(api_url, data=encoded_payload)
 
         # Check the response
         if response.status_code == 200:
