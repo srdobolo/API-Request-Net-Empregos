@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import html
-from data_cleaning import clean_job_data 
+from data_cleaning import clean_job_data  
 
 # API endpoint and key
 api_url = "http://partner.net-empregos.com/hrsmart_insert.asp"
@@ -108,4 +108,3 @@ else:
     print(f"No JSON script tag found at {test_url}")
 
 print("Testing complete.")
-print(payload)
