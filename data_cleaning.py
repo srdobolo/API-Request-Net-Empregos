@@ -3,7 +3,7 @@
 def clean_job_data(data, mappings):
     # Clean up the description text
     raw_description = data.get('description', 'No description provided.')
-    formatted_description = raw_description.replace("<br>", "\n")
+    formatted_description = raw_description.replace("<br>", "\n").encode('iso-8859-1')
 
     # Extract values
     location = data.get('jobLocation', {}).get('address', {}).get('addressLocality', 'Foreign - Others')
