@@ -6,7 +6,7 @@ def clean_job_data(data, mappings):
     formatted_description = raw_description.replace("<br>", "\n")
 
     # Extract values
-    location = data.get('jobLocation', {}).get('address', {}).get('addressLocality', 'Unknown')
+    location = data.get('jobLocation', {}).get('address', {}).get('addressLocality', 'Foreign - Others')
     category = data.get('industry', {}).get('value', 'Unknown')  # Adjust according to where the category comes from
     type = data.get('employmentType', 'Unknown')  # Placeholder: Update with logic for employmentType
 
