@@ -3,10 +3,10 @@
 def clean_job_data(data, mappings):
     # Clean up the description text
     raw_description = data.get('description', 'No description provided.')
-    formatted_description = raw_description.replace("<br>", "\n").encode('iso-8859-1')
+    formatted_description = raw_description.replace("<br>", "\n")
 
     # Extract values
-    location = data.get('jobLocation', {}).get('address', {}).get('addressLocality', 'Foreign - Others')
+    location = data.get('jobLocation', {}).get('address', {}).get('addressLocality', 'Unknown')
     category = data.get('industry', {}).get('value', 'Unknown')  
     type = data.get('employmentType', 'Unknown')  
 
@@ -16,6 +16,9 @@ def clean_job_data(data, mappings):
     # Handle special cases on Location
     if location == "Lisbon":
         location = "Lisboa"  # Convert "Lisbon" to "Lisboa"
+    # Check if location exists in the mappings
+    if location not in mappings["zona_mapping"]:
+        location = "Foreign - Others"
 
     # Handle special cases on Category
     category_mappings = {
