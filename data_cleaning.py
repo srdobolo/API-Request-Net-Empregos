@@ -16,7 +16,6 @@ def clean_job_data(data, mappings):
 
     # Handle special cases on Category
     category_mappings = {
-        "Customer Service": "Call Center / Help Desk",
         "Telecomunicações": "Telecommunications",
         "Informática ( Programação )": "Programming",
         "Indústria / Produção": "Industry / Production",
@@ -59,7 +58,7 @@ def clean_job_data(data, mappings):
         "Engenharia ( Ambiente )": "Engineering (Environmental)",
         "Serviços Sociais": "Social Services",
         "Informática (Comercial/Gestor de Conta)": "IT (Sales/Account Manager)",
-        "Call Center / Help Desk": "Call Center / Help Desk",
+        "Call Center / Help Desk": "Customer Service",
         "Limpezas / Domésticas": "Cleaning / Domestic"
     }
 
