@@ -2,7 +2,6 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import html
-from urllib.parse import urlencode
 
 # API endpoint and key
 api_url = "http://partner.net-empregos.com/hrsmart_insert.asp"
@@ -21,8 +20,15 @@ except FileNotFoundError:
 test_url = "https://www.smart-recruitments.com/find-jobs-all/customer-support-with-dutch-in-lisbon-pt"
 
 # Fetch the job details page
-response = requests.get(test_url)
-job_html_content = response.content
+try:
+    response = requests.get(test_url)
+    if response.status_code != 200:
+        print(f"Error: Failed to fetch the page. HTTP Status: {response.status_code}")
+        exit(1)
+    job_html_content = response.content
+except requests.RequestException as e:
+    print(f"Error fetching URL {test_url}: {e}")
+    exit(1)
 
 # Parse the HTML with BeautifulSoup
 job_soup = BeautifulSoup(job_html_content, 'html.parser')
@@ -40,23 +46,33 @@ if script_tag and script_tag.string:
         # Parse the JSON content
         data = json.loads(json_content_unescaped)
 
+        # Debugging: Log the loaded JSON
+        print("Parsed JSON data:", json.dumps(data, indent=2))
+
+        # Clean up the description text
+        raw_description = data.get('description', 'No description provided.')
+        formatted_description = raw_description.replace("<br>", "\n")
+
+        # Debugging: Log the formatted description
+        print("Formatted Description:", formatted_description)
+
         # Prepare the payload for the API request
         payload = {
             "ACCESS": api_key,
             "REF": data.get('identifier', {}).get('value', 'job001'),
             "TITULO": data.get('title', 'undisclosed'),
             "TEXTO": (
-        f"{data.get('description', 'No description provided.')}\n\n"
-        f'<a href="{test_url}" target="_blank">Clique aqui para se candidatar!</a> '
-        "ou por email para info@smart-recruitments.com"
-    ),
+                f"{formatted_description}\n\n"
+                f'<a href="{test_url}" target="_blank">Clique aqui para se candidatar!</a> '
+                "ou por email para info@smart-recruitments.com"
+            ),
             "ZONA": "1",  # Need to communicate with mapping.json
-            "CATEGORIA": "10",  # Need to communicate with mapping.json
+            "CATEGORIA": "57",  # Need to communicate with mapping.json
             "TIPO": "1",  # Need to communicate with mapping.json
         }
 
-        # Log the payload
-        print(f"Payload to be sent: {payload}")
+        # Debugging: Log the payload
+        print("Payload to be sent:", payload)
 
         # Send the POST request
         response = requests.post(api_url, data=payload)
@@ -65,14 +81,14 @@ if script_tag and script_tag.string:
         if response.status_code == 200:
             print(f"Job '{payload['TITULO']}' successfully sent.")
         else:
-            print(f"Failed to send job '{payload['TITULO']}'. HTTP Status: {response.status_code}, Response: {response.text}")
-            print(f"Payload Sent: {payload}")
+            print(f"Failed to send job '{payload['TITULO']}'. HTTP Status: {response.status_code}")
+            print("Response Content:", response.text)
 
     except json.JSONDecodeError:
-        print(f"Error decoding JSON from {test_url}")
+        print("Error: Could not decode JSON from the script tag.")
     except Exception as e:
-        print(f"Error processing job '{test_url}': {e}")
+        print(f"Unexpected error processing job: {e}")
 else:
-    print(f"No JSON script tag found in {test_url}")
+    print(f"No JSON script tag found at {test_url}")
 
 print("Testing complete.")
