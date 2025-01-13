@@ -45,7 +45,11 @@ if script_tag and script_tag.string:
             "ACCESS": api_key,
             "REF": data.get('identifier', {}).get('value', 'job001'),
             "TITULO": data.get('title', 'undisclosed'),
-            "TEXTO": data.get('description', 'No description provided.'),
+            "TEXTO": (
+        f"{data.get('description', 'No description provided.')}\n\n"
+        f'<a href="{test_url}" target="_blank">Clique aqui para se candidatar!</a> '
+        "ou por email para info@smart-recruitments.com"
+    ),
             "ZONA": "1",  # Need to communicate with mapping.json
             "CATEGORIA": "10",  # Need to communicate with mapping.json
             "TIPO": "1",  # Need to communicate with mapping.json
