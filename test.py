@@ -4,9 +4,6 @@ import json
 import html
 from data_cleaning import clean_job_data  
 
-# API endpoint and key
-api_url = "http://partner.net-empregos.com/hrsmart_insert.asp"
-
 # Read the API key from a file
 key_file_path = "API_ACCESS_KEY"
 
@@ -16,6 +13,9 @@ try:
 except FileNotFoundError:
     print(f"Error: The file '{key_file_path}' was not found. Please ensure it exists.")
     exit(1)
+
+# API endpoint and key
+api_url = "http://partner.net-empregos.com/hrsmart_insert.asp"
 
 # Load the mapping.json file
 mapping_file_path = "mapping.json"
@@ -89,6 +89,36 @@ if script_tag and script_tag.string:
 
         # Ensure that text fields are encoded in ISO-8859-1
         encoded_payload = {key: value.encode('iso-8859-1') if isinstance(value, str) else value for key, value in payload.items()}
+
+        # Extract the unique identifier for the job
+        job_identifier = data.get('identifier', {}).get('value', 'job001')
+
+        # API endpoint for removing a job
+        remove_api_url = "http://partner.net-empregos.com/hrsmart_remove.asp"
+
+        # Prepare the payload for the removal request
+        remove_payload = {
+            "ACCESS": api_key,
+            "REF": job_identifier,
+        }
+
+        # Debugging: Log the removal payload
+        print("Removal payload:", remove_payload)
+
+        # Send the GET request to remove the job
+        try:
+            remove_response = requests.get(remove_api_url, params=remove_payload)
+
+            # Check the response
+            if remove_response.status_code == 200:
+                print(f"Job '{job_identifier}' successfully removed.")
+            else:
+                print(f"Failed to remove job '{job_identifier}'. HTTP Status: {remove_response.status_code}")
+                print("Response Content:", remove_response.text)
+
+        except requests.RequestException as e:
+            print(f"Error removing job '{job_identifier}': {e}")
+            exit(1)
 
         # Send the POST request
         response = requests.post(api_url, data=encoded_payload)
