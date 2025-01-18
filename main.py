@@ -6,7 +6,7 @@ from urllib.parse import urljoin
 from data_cleaning import clean_job_data  # Assuming you have this function implemented
 
 # Base URL for the find-jobs section
-BASE_URL = 'https://smart-recruitments.com/find-jobs-all/'
+BASE_URL = 'https://smart-recruitments.com/'
 
 # API endpoint and key
 API_URL = "http://partner.net-empregos.com/hrsmart_insert.asp"
