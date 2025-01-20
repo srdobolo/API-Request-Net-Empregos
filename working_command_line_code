@@ -1,1 +1,0 @@
-curl -X POST -d "ACCESS=6F89DD1C1E8D4CD2&REF=job001&TITULO=Software%20Engineer&TEXTO=We%20are%20looking%20for%20a%20skilled%20software%20engineer...&ZONA=1&CATEGORIA=10&TIPO=1" "http://partner.net-empregos.com/hrsmart_insert.asp"
