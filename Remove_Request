@@ -5,7 +5,7 @@ import html
 from urllib.parse import urljoin
 
 # Base URL for the find-jobs section
-BASE_URL = 'https://recruityard.com/'
+BASE_URL = 'https://www.recruityard.com/'
 
 # API endpoint and key
 REMOVE_API_URL = "http://partner.net-empregos.com/hrsmart_remove.asp"
