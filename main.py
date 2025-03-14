@@ -104,7 +104,7 @@ for job_url in job_links:
                     "TEXTO": (
                         f"{formatted_description}\n\n"
                         f'<a href="{job_url}" target="_blank">Clique aqui para se candidatar!</a> '
-                        "ou por email para info@smart-recruitments.com"
+                        "ou por email para info@recruityard.com"
                     ),
                     "ZONA": zona,
                     "CATEGORIA": categoria,
