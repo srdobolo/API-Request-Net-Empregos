@@ -25,9 +25,44 @@ def clean_url(base, href):
     full_url = urljoin(base, href)
     parsed = urlparse(full_url)
     path_segments = parsed.path.split('/')
-    # Keep only the first occurrence of 'find-jobs-all'
     cleaned_path = '/'.join([seg for i, seg in enumerate(path_segments) if seg != 'find-jobs-all' or i == path_segments.index('find-jobs-all')])
     return urlunparse((parsed.scheme, parsed.netloc, cleaned_path, parsed.params, parsed.query, parsed.fragment))
+
+# Function to convert full HTML to minimalist HTML with only <br>
+def simplify_html(html_text):
+    # Parse HTML content
+    soup = BeautifulSoup(html_text, 'html.parser')
+    
+    # Remove script and style elements
+    for element in soup(['script', 'style']):
+        element.decompose()
+    
+    # Get text with breaks
+    lines = []
+    for element in soup.recursiveChildGenerator():
+        if isinstance(element, str):
+            text = element.strip()
+            if text:
+                lines.append(text)
+        elif element.name in ['br', 'p', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']:
+            lines.append('')  # Add empty line for block elements
+    
+    # Join lines with <br> tags, skipping consecutive empty lines
+    result = ''
+    prev_empty = False
+    for line in lines:
+        if line:
+            result += line + '<br>'
+            prev_empty = False
+        elif not prev_empty:
+            result += '<br>'
+            prev_empty = True
+    
+    # Remove trailing <br> if present
+    if result.endswith('<br>'):
+        result = result[:-4]
+    
+    return result
 
 # Read the API key
 try:
@@ -52,7 +87,7 @@ except json.JSONDecodeError as e:
 try:
     print(f"Fetching base URL: {BASE_URL}")
     response = requests.get(BASE_URL, headers=HEADERS)
-    response.raise_for_status()  # Raise an error for bad HTTP responses
+    response.raise_for_status()
     html_content = response.content
 except requests.RequestException as e:
     print(f"Error fetching base URL: {e}")
@@ -77,36 +112,32 @@ print(f"Found {len(job_links)} job(s) to process ending with 'pt': {job_links}")
 for job_url in job_links:
     print(f"Fetching job page: {job_url}")
     try:
-        # Fetch the job details page
         response = requests.get(job_url, headers=HEADERS)
         response.raise_for_status()
         job_html_content = response.content
 
-        # Parse the HTML with BeautifulSoup
         job_soup = BeautifulSoup(job_html_content, 'html.parser')
-
-        # Locate the <script> tag containing the JSON
         script_tag = job_soup.find('script', type='application/ld+json')
 
         if script_tag and script_tag.string:
             json_content = script_tag.string
 
             try:
-                # Unescape and parse the JSON content
                 json_content_unescaped = html.unescape(json_content)
                 data = json.loads(json_content_unescaped)
 
-                # Clean the job data
                 formatted_description, zona, categoria, tipo = clean_job_data(data, mappings)
+                
+                # Simplify the HTML description
+                minimalist_description = simplify_html(formatted_description)
 
-                # Prepare the payload for the API request
                 payload = {
                     "ACCESS": API_KEY,
                     "REF": data.get('identifier', {}).get('value', 'job001'),
                     "TITULO": data.get('title', 'undisclosed'),
                     "TEXTO": (
-                        f"{formatted_description}\n\n"
-                        f'<a href="{job_url}" target="_blank">Clique aqui para se candidatar!</a> '
+                        f"{minimalist_description}<br><br>"
+                        f'<a href="{job_url}" target="_blank">Clique aqui para se candidatar!</a><br>'
                         "ou por email para info@recruityard.com"
                     ),
                     "ZONA": zona,
@@ -114,13 +145,11 @@ for job_url in job_links:
                     "TIPO": tipo,
                 }
 
-                # Encode payload in ISO-8859-1
                 encoded_payload = {
                     key: (value.encode('iso-8859-1', errors='replace') if isinstance(value, str) else value)
                     for key, value in payload.items()
                 }
 
-                # Prepare and send the removal request
                 remove_payload = {
                     "ACCESS": API_KEY,
                     "REF": data.get('identifier', {}).get('value', 'job001'),
@@ -137,11 +166,10 @@ for job_url in job_links:
                     print(f"Error removing job '{remove_payload['REF']}': {e}")
                     continue
 
-                # Send the POST request to insert the job
                 post_response = requests.post(API_URL, data=encoded_payload)
                 if post_response.status_code == 200:
                     print(f"Job '{payload['TITULO']}' successfully sent.")
-                    successful_requests += 1  # Increment counter on success
+                    successful_requests += 1
                 else:
                     print(f"Failed to send job '{payload['TITULO']}'. HTTP Status: {post_response.status_code}")
                     print("Response Content:", post_response.text)
@@ -156,6 +184,5 @@ for job_url in job_links:
     except requests.RequestException as e:
         print(f"Error fetching job URL {job_url}: {e}")
 
-# Final output with the count of successful requests
 print("Processing complete.")
 print(f"Total number of job requests successfully sent: {successful_requests}")
