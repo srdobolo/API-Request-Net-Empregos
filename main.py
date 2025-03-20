@@ -17,6 +17,9 @@ MAPPING_FILE_PATH = "mapping.json"
 # Headers to mimic a browser request
 HEADERS = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
 
+# Counter for successful job requests
+successful_requests = 0
+
 # Function to clean URLs and avoid duplicate segments
 def clean_url(base, href):
     full_url = urljoin(base, href)
@@ -138,6 +141,7 @@ for job_url in job_links:
                 post_response = requests.post(API_URL, data=encoded_payload)
                 if post_response.status_code == 200:
                     print(f"Job '{payload['TITULO']}' successfully sent.")
+                    successful_requests += 1  # Increment counter on success
                 else:
                     print(f"Failed to send job '{payload['TITULO']}'. HTTP Status: {post_response.status_code}")
                     print("Response Content:", post_response.text)
@@ -152,4 +156,6 @@ for job_url in job_links:
     except requests.RequestException as e:
         print(f"Error fetching job URL {job_url}: {e}")
 
+# Final output with the count of successful requests
 print("Processing complete.")
+print(f"Total number of job requests successfully sent: {successful_requests}")
