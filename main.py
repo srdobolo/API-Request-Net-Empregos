@@ -137,7 +137,7 @@ for job_url in job_links:
                     "TITULO": data.get('title', 'undisclosed'),
                     "TEXTO": (
                         f"{minimalist_description}<br><br>"
-                        f'<a href="{job_url}" target="_blank">Clique aqui para se candidatar!</a><br>'
+                        f'<a href="{job_url}?id={data.get('identifier', {}).get('value', 'job001')}&utm_source=NET_EMPREGOS" target="_blank">Clique aqui para se candidatar!</a><br>'
                         "ou por email para info@recruityard.com"
                     ),
                     "ZONA": zona,
