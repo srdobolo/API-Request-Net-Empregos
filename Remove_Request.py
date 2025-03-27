@@ -3,6 +3,9 @@ from bs4 import BeautifulSoup
 import json
 import html
 from urllib.parse import urljoin, urlparse, urlunparse
+import time
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 # Base URL for the find-jobs section
 BASE_URL = 'https://www.recruityard.com/find-jobs-all/'
@@ -14,12 +17,22 @@ KEY_FILE_PATH = "API_ACCESS_KEY"
 # Headers to mimic a browser request
 HEADERS = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
 
+# Set up a session with retry logic
+session = requests.Session()
+retry_strategy = Retry(
+    total=3,  # Retry up to 3 times
+    backoff_factor=1,  # Wait 1, 2, 4 seconds between retries
+    status_forcelist=[429, 500, 502, 503, 504]  # Retry on these HTTP status codes
+)
+adapter = HTTPAdapter(max_retries=retry_strategy)
+session.mount("http://", adapter)
+session.mount("https://", adapter)
+
 # Function to clean URLs and avoid duplicate segments
 def clean_url(base, href):
     full_url = urljoin(base, href)
     parsed = urlparse(full_url)
     path_segments = parsed.path.split('/')
-    # Keep only the first occurrence of 'find-jobs-all'
     cleaned_path = '/'.join([seg for i, seg in enumerate(path_segments) if seg != 'find-jobs-all' or i == path_segments.index('find-jobs-all')])
     return urlunparse((parsed.scheme, parsed.netloc, cleaned_path, parsed.params, parsed.query, parsed.fragment))
 
@@ -34,8 +47,8 @@ except FileNotFoundError:
 # Step 1: Load the main jobs page to find all job links
 try:
     print(f"Fetching base URL: {BASE_URL}")
-    response = requests.get(BASE_URL, headers=HEADERS)
-    response.raise_for_status()  # Raise an error for bad HTTP responses
+    response = session.get(BASE_URL, headers=HEADERS)
+    response.raise_for_status()
     html_content = response.content
 except requests.RequestException as e:
     print(f"Error fetching base URL: {e}")
@@ -57,44 +70,51 @@ job_links = list(set([
 print(f"Found {len(job_links)} job(s) to process ending with 'pt': {job_links}")
 
 # Step 3: Process each job link
+removed_jobs = 0
 for job_url in job_links:
-    print(f"Fetching job page: {job_url}")
+    print(f"\nFetching job page: {job_url}")
     try:
-        # Fetch the job details page
-        response = requests.get(job_url, headers=HEADERS)
+        response = session.get(job_url, headers=HEADERS)
         response.raise_for_status()
         job_html_content = response.content
 
-        # Parse the HTML with BeautifulSoup
         job_soup = BeautifulSoup(job_html_content, 'html.parser')
-
-        # Locate the <script> tag containing the JSON
         script_tag = job_soup.find('script', type='application/ld+json')
 
         if script_tag and script_tag.string:
             json_content = script_tag.string
 
             try:
-                # Unescape and parse the JSON content
                 json_content_unescaped = html.unescape(json_content)
                 data = json.loads(json_content_unescaped)
 
-                # Prepare and send the removal request
+                ref_value = data.get('identifier', {}).get('value', 'job001')
+                print(f"Extracted REF: {ref_value}")
+
                 remove_payload = {
                     "ACCESS": API_KEY,
-                    "REF": data.get('identifier', {}).get('value', 'job001'),
+                    "REF": ref_value,
                 }
 
-                try:
-                    remove_response = requests.get(REMOVE_API_URL, params=remove_payload)
-                    if remove_response.status_code == 200:
-                        print(f"Job '{remove_payload['REF']}' successfully removed.")
-                    else:
-                        print(f"Failed to remove job '{remove_payload['REF']}'. HTTP Status: {remove_response.status_code}")
-                        print("Response Content:", remove_response.text)
-                except requests.RequestException as e:
-                    print(f"Error removing job '{remove_payload['REF']}': {e}")
-                    continue
+                # Retry logic for removal request
+                for attempt in range(3):
+                    try:
+                        remove_response = session.get(REMOVE_API_URL, params=remove_payload, timeout=10)
+                        if remove_response.status_code == 200:
+                            print(f"Job '{ref_value}' successfully removed.")
+                            removed_jobs += 1
+                            break
+                        else:
+                            print(f"Attempt {attempt + 1}: Failed to remove job '{ref_value}'. HTTP Status: {remove_response.status_code}")
+                            print("Response Content:", remove_response.text)
+                            if attempt < 2:
+                                time.sleep(2)  # Wait before retrying
+                    except requests.RequestException as e:
+                        print(f"Attempt {attempt + 1}: Error removing job '{ref_value}': {e}")
+                        if attempt < 2:
+                            time.sleep(2)  # Wait before retrying
+                else:
+                    print(f"Failed to remove job '{ref_value}' after 3 attempts.")
 
             except json.JSONDecodeError:
                 print(f"Error: Could not decode JSON from the script tag at {job_url}.")
@@ -106,4 +126,7 @@ for job_url in job_links:
     except requests.RequestException as e:
         print(f"Error fetching job URL {job_url}: {e}")
 
-print("Processing complete.")
+    time.sleep(1)  # Small delay between job requests to avoid overwhelming the API
+
+print("\nProcessing complete.")
+print(f"Total jobs successfully removed: {removed_jobs}/{len(job_links)}")
