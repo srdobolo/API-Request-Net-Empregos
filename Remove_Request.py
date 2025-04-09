@@ -142,7 +142,7 @@ for job_url in job_links:
         print(f"Error fetching job URL {job_url}: {e}")
         failed_removals.append((job_url, "Unknown", str(e)))
 
-    time.sleep(1)  # Small delay between job requests
+    time.sleep(5)  # Delay of 5 seconds between job requests
 
 print("\nProcessing complete.")
 print(f"Total jobs successfully removed: {successful_removals}/{len(job_links)}")
