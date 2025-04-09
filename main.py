@@ -212,7 +212,7 @@ for job_url in job_links:
         print(f"Error fetching job URL {job_url}: {e}")
         failed_jobs.append((job_url, "Unknown", str(e)))
 
-    time.sleep(1)
+    time.sleep(5)  # Delay of 5 seconds between job requests
 
 print("\nProcessing complete.")
 print(f"Total number of job requests successfully posted: {successful_requests}/{len(job_links)}")
