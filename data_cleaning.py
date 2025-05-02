@@ -69,8 +69,6 @@ def clean_job_data(data, mappings):
     }
 
     print(f"Raw category: {category}")
-    if category == "Healthcare":
-        category = "Saúde / Medicina / Enfermagem"
     if category in category_mappings:
         category = category_mappings[category]
     else:
