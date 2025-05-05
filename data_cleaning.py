@@ -87,8 +87,8 @@ def clean_job_data(data, mappings):
 
     # Map to IDs
     zona = mappings["zona_mapping"].get(location, "0")
-    #categoria = mappings["categoria_mapping"].get(category, "8")  # Default to "8" (Saúde / Medicina / Enfermagem)
+    categoria = mappings["categoria_mapping"].get(category, "8")
     tipo = mappings["tipo_mapping"].get(type, "0")
 
-    print(f"Final categoria: {category}")
-    return formatted_description, zona, category, tipo
+    print(f"Final categoria: {categoria}")
+    return formatted_description, zona, categoria, tipo
