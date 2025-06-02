@@ -16,7 +16,10 @@ load_dotenv()
 BASE_URL = 'https://www.recruityard.com/find-jobs-all/'
 API_URL = "http://partner.net-empregos.com/hrsmart_insert.asp"
 REMOVE_API_URL = "http://partner.net-empregos.com/hrsmart_remove.asp"
-KEY_FILE_PATH = os.getenv("API_ACCESS_KEY")
+API_KEY = os.getenv("API_ACCESS_KEY")
+if not API_KEY:
+    print("Error: API_ACCESS_KEY is not set in the environment or .env file.")
+    exit(1)
 MAPPING_FILE_PATH = "mapping.json"
 HEADERS = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
 
@@ -72,14 +75,6 @@ def format_ref(ref):
     elif len(cleaned_ref) > 20:
         cleaned_ref = cleaned_ref[:20]
     return cleaned_ref
-
-# Read API key
-try:
-    with open(KEY_FILE_PATH, "r") as file:
-        API_KEY = file.read().strip()
-except FileNotFoundError:
-    print(f"Error: '{KEY_FILE_PATH}' not found.")
-    exit(1)
 
 # Load mapping file
 try:
