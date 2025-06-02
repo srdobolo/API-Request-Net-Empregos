@@ -8,6 +8,9 @@ from urllib3.util.retry import Retry
 import os
 import time
 from data_cleaning import clean_job_data  # Updated function below
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Base URL and API endpoints
 BASE_URL = 'https://www.recruityard.com/find-jobs-all/'
