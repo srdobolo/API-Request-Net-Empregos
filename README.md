@@ -71,13 +71,13 @@ The script will:
 - Submit job listings to Net-Empregos
 
 ## File Structure
-- main.py[https://github.com/srdobolo/API-Request-Net-Empregos/blob/main/main.py]: Entry point of the application.
-- data_cleaning.py: Functions to sanitize and prepare job data.
-- Remove_Request.py: Handles the removal of job postings (if implemented).
-- mapping.json: JSON file mapping internal job fields to Net-Empregos format.
-- requirements.txt: Python dependencies.
-- requirements_linux.txt: Dependencies tailored for Linux.
-- Net-Empregos Interface.doc.pdf: Documentation for the Net-Empregos interface.
+- [main.py](https://github.com/srdobolo/API-Request-Net-Empregos/blob/main/main.py): Entry point of the application.
+- [data_cleaning.py](https://github.com/srdobolo/API-Request-Net-Empregos/blob/main/data_cleaning.py): Functions to sanitize and prepare job data.
+- [Remove_Request.py](https://github.com/srdobolo/API-Request-Net-Empregos/blob/main/Remove_Request.py): Handles the removal of job postings (if implemented).
+- [mapping.json](https://github.com/srdobolo/API-Request-Net-Empregos/blob/main/mapping.json): JSON file mapping internal job fields to Net-Empregos format.
+- [requirements.txt](https://github.com/srdobolo/API-Request-Net-Empregos/blob/main/requirements.txt): Python dependencies.
+- [requirements_linux.txt](https://github.com/srdobolo/API-Request-Net-Empregos/blob/main/requirements_linux.txt): Dependencies tailored for Linux.
+- [Net-Empregos Interface.doc.pdf](https://github.com/srdobolo/API-Request-Net-Empregos/blob/main/Net-Empregos%20Interface.doc.pdf): Documentation for the Net-Empregos interface.
 
 ## Troubleshooting
 - Error: API_ACCESS_KEY is not set in the environment or .env file.
