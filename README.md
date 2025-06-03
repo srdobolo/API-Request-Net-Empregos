@@ -71,7 +71,7 @@ The script will:
 - Submit job listings to Net-Empregos
 
 ## File Structure
-- main.py: Entry point of the application.
+- main.py[https://github.com/srdobolo/API-Request-Net-Empregos/blob/main/main.py]: Entry point of the application.
 - data_cleaning.py: Functions to sanitize and prepare job data.
 - Remove_Request.py: Handles the removal of job postings (if implemented).
 - mapping.json: JSON file mapping internal job fields to Net-Empregos format.
