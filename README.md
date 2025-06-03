@@ -60,7 +60,7 @@ Ensure it's correctly set up before running the script.
 
 ## Usage
 
-To run the main script:
+- To run the main script:
    ```bash
    python main.py
 
@@ -69,3 +69,22 @@ The script will:
 - Clean and format it
 - Map fields via mapping.json
 - Submit job listings to Net-Empregos
+
+## File Structure
+- main.py: Entry point of the application.
+- data_cleaning.py: Functions to sanitize and prepare job data.
+- Remove_Request.py: Handles the removal of job postings (if implemented).
+- mapping.json: JSON file mapping internal job fields to Net-Empregos format.
+- requirements.txt: Python dependencies.
+- requirements_linux.txt: Dependencies tailored for Linux.
+- Net-Empregos Interface.doc.pdf: Documentation for the Net-Empregos interface.
+
+## Troubleshooting
+- Error: API_ACCESS_KEY is not set in the environment or .env file.
+→ Make sure the key is set either in the shell or a .env file in the project root.
+
+- Process completed with exit code 1
+→ This indicates an error during execution. Check console output and ensure configurations are correct.
+
+## License
+This project is licensed under the MIT License.
