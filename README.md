@@ -32,11 +32,11 @@ It streamlines the process of submitting job listings, ensuring efficiency and c
 
 3. **Install dependencies**:
 
-    - For general use:
+- For general use:
    ```bash
    pip install -r requirements.txt
 
-    - For Linux systems:
+- For Linux systems:
    ```bash
    pip install -r requirements_linux.txt
 
@@ -60,10 +60,12 @@ Ensure it's correctly set up before running the script.
 
 ## Usage
 
-- For general use:
+To run the main script:
    ```bash
-   pip install -r requirements.txt
+   python main.py
 
-- For Linux systems:
-   ```bash
-   pip install -r requirements_linux.txt
+The script will:
+- Read job data
+- Clean and format it
+- Map fields via mapping.json
+- Submit job listings to Net-Empregos
