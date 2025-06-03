@@ -45,11 +45,11 @@ It streamlines the process of submitting job listings, ensuring efficiency and c
 1. **Set the API access key**:
 
 You can either:
-    - Set it in the shell:
+- Set it in the shell:
    ```bash
    export API_ACCESS_KEY='your_api_key_here'
 
-    - Or create a .env file:
+- Or create a .env file:
    ```bash
    echo "API_ACCESS_KEY=your_api_key_here" > .env
 
@@ -60,10 +60,10 @@ Ensure it's correctly set up before running the script.
 
 ## Usage
 
-    - For general use:
+- For general use:
    ```bash
    pip install -r requirements.txt
 
-    - For Linux systems:
+- For Linux systems:
    ```bash
    pip install -r requirements_linux.txt
