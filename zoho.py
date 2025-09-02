@@ -42,6 +42,25 @@ except Exception as e:
     logging.error(f"Erro ao carregar XML feed → {e}")
     raise
 
+# normalizeção de texto
+# garantir que tudo fica em ISO-8859-1 antes do envio
+def to_iso_8859_1(text):
+    return text.encode("utf-8", errors="ignore").decode("iso-8859-1", errors="ignore")
+
+import re
+
+def normalize_text(text: str) -> str:
+    # substitui apóstrofos e aspas tipográficas por simples
+    replacements = {
+        "’": "'", "‘": "'",
+        "“": '"', "”": '"',
+        "–": "-", "—": "-",  # travessões
+        "…": "..."           # reticências
+    }
+    for k, v in replacements.items():
+        text = text.replace(k, v)
+    return text
+
 for job in root.findall("job"):
     try:
         title = job.findtext("title", "").strip()
@@ -90,11 +109,11 @@ for job in root.findall("job"):
         payload = {
             "ACCESS": API_KEY,
             "REF": ref,
-            "TITULO": title,
-            "TEXTO": (
+            "TITULO": to_iso_8859_1(title),
+            "TEXTO": (normalize_text(
                 f"{description}"
                 f"<a href='{url}'>Clique aqui para se candidatar!</a><br>"
-                f"ou por email para info@recruityard.com"
+                f"ou por email para info@recruityard.com")
             ),
             "ZONA": zona,
             "CATEGORIA": categoria,
