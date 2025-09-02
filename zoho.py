@@ -92,7 +92,7 @@ for job in root.findall("job"):
             "REF": ref,
             "TITULO": title,
             "TEXTO": (
-                f"{description}<br>"
+                f"{description}"
                 f"<a href='{url}'>Clique aqui para se candidatar!</a><br>"
                 f"ou por email para info@recruityard.com"
             ),
