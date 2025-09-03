@@ -17,10 +17,11 @@ BASE_URL = 'https://www.recruityard.com/find-jobs-all/'
 
 # API endpoint and key
 REMOVE_API_URL = "http://partner.net-empregos.com/hrsmart_remove.asp"
-API_KEY = os.getenv("API_ACCESS_KEY")
-if not API_KEY:
-    print("Error: API_ACCESS_KEY is not set in the environment or .env file.")
-    exit(1)
+API_KEY = '6F89DD1C1E8D4CD2'
+# API_KEY = os.getenv("API_ACCESS_KEY")
+# if not API_KEY:
+#     print("Error: API_ACCESS_KEY is not set in the environment or .env file.")
+#     exit(1)
 
 # Headers to mimic a browser request
 HEADERS = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
