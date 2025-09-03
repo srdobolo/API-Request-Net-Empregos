@@ -102,9 +102,7 @@ The script will:
 
 This project is fully automated using **GitHub Actions**:
 
-```bash
-.github/workflows/actions.yml
-```
+[`.github/workflows/actions.yml`](.github/workflows/actions.yml)
 
 - The script runs automatically on a defined schedule.
 
